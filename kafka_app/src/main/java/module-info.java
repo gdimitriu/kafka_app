@@ -33,6 +33,7 @@ module gdimitriu.kafka_app {
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
+    requires kafka.clients;
     opens gdimitriu.kafka_app.application to spring.core,spring.beans, spring.context;
     opens gdimitriu.kafka_app.dao to spring.core,spring.beans, spring.context, com.fasterxml.jackson.databind;
     opens gdimitriu.kafka_app.properties to spring.core,spring.beans, spring.context, spring.boot;

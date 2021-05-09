@@ -19,30 +19,7 @@
  */
 package gdimitriu.kafka_app.dao;
 
-public class RequestPostTopic {
-    private String key;
-    private String value;
+public class RequestConsumerTopic {
 
-    public RequestPostTopic() {}
-
-    public RequestPostTopic(String key, String value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
+    public RequestConsumerTopic() {}
 }

@@ -1,4 +1,21 @@
 server:
   port: 1080
 kafka:
-  bootstrap.servers: localhost:9093
+  bootstrap:
+    servers: localhost:9093
+  key:
+    serializer: org.apache.kafka.common.serialization.StringSerializer
+    deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  value:
+    serializer: org.apache.kafka.common.serialization.StringSerializer
+    deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  enable:
+    auto:
+      commit: true
+  auto:
+    commit:
+      interval:
+        ms: 1000
+  session:
+    timeout:
+      ms: 30000
