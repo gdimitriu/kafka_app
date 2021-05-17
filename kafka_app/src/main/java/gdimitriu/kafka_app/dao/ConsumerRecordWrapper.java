@@ -1,9 +1,11 @@
 package gdimitriu.kafka_app.dao;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Data;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 @Data
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ConsumerRecordWrapper {
 
     private String topic;
