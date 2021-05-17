@@ -22,12 +22,15 @@ package gdimitriu.kafka_app.controllers.rest;
 import gdimitriu.kafka_app.dao.RequestPostTopic;
 import gdimitriu.kafka_app.dao.ResponseGetTopic;
 import gdimitriu.kafka_app.properties.KafkaProperties;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,16 +38,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 @RestController
 @RequestMapping("/kafka/client")
-@Slf4j
 public class KafkaRestClientController {
-
+    private static final Logger log = LoggerFactory.getLogger(KafkaRestClientController.class);
     @Autowired
     private KafkaProperties properties;
 
@@ -72,8 +72,10 @@ public class KafkaRestClientController {
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/topics/{topic}/records/{groupId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ResponseGetTopic> getTopicRecords(@PathVariable("topic") String topicName, @PathVariable("groupId") String groupId) {
+    @RequestMapping(value = "/topics/{topic}/records/{groupId}/{clientId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ResponseGetTopic> getTopicRecords(@PathVariable("topic") String topicName,
+                                                            @PathVariable("groupId") String groupId,
+                                                            @PathVariable("clientId") String clientId) {
         Properties kafkaProps = new Properties();
         kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
         kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG,groupId);
@@ -82,7 +84,7 @@ public class KafkaRestClientController {
         kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getEnableAutoCommit());
         kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
         kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
-        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, "my");
+        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
         kafkaProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
         consumer.subscribe(Arrays.asList(topicName));
