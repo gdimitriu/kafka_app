@@ -28,7 +28,6 @@ module gdimitriu.kafka_app {
     requires spring.webmvc;
     requires java.management;
     requires org.slf4j;
-    requires lombok;
     requires java.annotation;
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.core;

@@ -12,6 +12,7 @@
         <maven.compiler.target>13</maven.compiler.target>
         <springboot.version>2.4.5</springboot.version>
         <jackson.version>2.12.3</jackson.version>
+        <log4j.version>2.14.1</log4j.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -24,6 +25,52 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${springboot.version}</version>
+            </plugin>
+            <plugin>
+                <!--https://dmp.fabric8.io/#simple-dockerfile-build -->
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.35.0</version>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>gdimitriu/kafka_app:${project.version}</name>
+                            <alias>kafka_app</alias>
+                            <build>
+                                <from>adoptopenjdk/openjdk13:jdk-13.0.2_8-ubuntu-slim</from>
+                                <ports>1080</ports>
+                                <entryPoint>
+                                    <exec>
+                                        <args>java</args>
+                                        <args>-jar</args>
+                                        <args>/opt/app/${project.artifactId}-${project.version}.jar</args>
+                                        <args>--spring.config.location=file:/opt/app/kafka_app.yaml</args>
+                                    </exec>
+                                </entryPoint>
+                                <assemblies>
+                                    <assembly>
+                                        <name>application</name>
+                                        <descriptorRef>artifact</descriptorRef>
+                                        <targetDir>/opt/app</targetDir>
+                                    </assembly>
+                                    <assembly>
+                                        <name>settings</name>
+                                        <descriptor>${project.basedir}/src/main/resources/settings-assembly.xml</descriptor>
+                                        <mode>dir</mode>
+                                    </assembly>
+                                </assemblies>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>docker-build</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -83,10 +130,17 @@
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
     </dependencies>
 </project>
