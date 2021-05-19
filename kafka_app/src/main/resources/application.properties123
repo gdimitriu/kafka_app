@@ -1,5 +1,0 @@
-server.port = 1080
-
-kafka.bootstrap.host=localhost
-kafka.bootstrap.port=9093
-kafka.data=abc

@@ -11,6 +11,7 @@
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
         <springboot.version>2.4.5</springboot.version>
+        <springdoc.version>1.5.2</springdoc.version>
         <jackson.version>2.12.3</jackson.version>
         <log4j.version>2.14.1</log4j.version>
     </properties>
@@ -39,6 +40,10 @@
                             <build>
                                 <from>adoptopenjdk/openjdk13:jdk-13.0.2_8-ubuntu-slim</from>
                                 <ports>1080</ports>
+                                <env>
+                                    <exposeRestPort>8080</exposeRestPort>
+                                    <kafkaPort>9093</kafkaPort>
+                                </env>
                                 <entryPoint>
                                     <exec>
                                         <args>java</args>
@@ -54,9 +59,8 @@
                                         <targetDir>/opt/app</targetDir>
                                     </assembly>
                                     <assembly>
-                                        <name>settings</name>
+                                        <name>opt</name>
                                         <descriptor>${project.basedir}/src/main/resources/settings-assembly.xml</descriptor>
-                                        <mode>dir</mode>
                                     </assembly>
                                 </assemblies>
                             </build>
@@ -141,6 +145,22 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+        <!-- openAPI remove if you test from intelij -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
     </dependencies>
 </project>

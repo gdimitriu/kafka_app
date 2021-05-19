@@ -1,8 +1,8 @@
 server:
-  port: 8080
+  port: ${exposeRestPort}
 kafka:
   bootstrap:
-    servers: localhost:9093
+    servers: ${kafkaPort}
   key:
     serializer: org.apache.kafka.common.serialization.StringSerializer
     deserializer: org.apache.kafka.common.serialization.StringDeserializer

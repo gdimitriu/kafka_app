@@ -4,7 +4,7 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/docker_settings</directory>
-            <outputDirectory>/opt/app</outputDirectory>
+            <outputDirectory>app</outputDirectory>
             <includes>
                 <include>kafka_app.yaml</include>
             </includes>

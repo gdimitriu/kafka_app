@@ -36,6 +36,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ public class KafkaRestClientController {
     }
 
     @RequestMapping(value = "/topics/{topic}", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> postTopic(@PathVariable("topic") String topicName, @RequestBody  RequestPostTopic dataTopic) {
+    public ResponseEntity<?> postTopic(@PathVariable("topic") String topicName, @Valid @RequestBody  RequestPostTopic dataTopic) {
         log.info("topic:" + topicName + " data = " + dataTopic.getKey() + ":" + dataTopic.getValue());
         Properties kafkaProps = new Properties();
         kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
@@ -73,9 +74,9 @@ public class KafkaRestClientController {
     }
 
     @RequestMapping(value = "/topics/{topic}/records/{groupId}/{clientId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ResponseGetTopic> getTopicRecords(@PathVariable("topic") String topicName,
-                                                            @PathVariable("groupId") String groupId,
-                                                            @PathVariable("clientId") String clientId) {
+    public ResponseEntity<ResponseGetTopic> getTopicRecords(@Valid @PathVariable("topic") String topicName,
+                                                            @Valid @PathVariable("groupId") String groupId,
+                                                            @Valid @PathVariable("clientId") String clientId) {
         Properties kafkaProps = new Properties();
         kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
         kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG,groupId);
