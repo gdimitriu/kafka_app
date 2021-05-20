@@ -36,8 +36,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
 
+import javax.validation.Valid;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
@@ -73,8 +73,29 @@ public class KafkaRestClientController {
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/topics/{topic}/records/{groupId}/{clientId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(value = "/topics/{topic}/records/{groupId}/{clientId}/{offsetId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseGetTopic> getTopicRecords(@Valid @PathVariable("topic") String topicName,
+                                                            @Valid @PathVariable("groupId") String groupId,
+                                                            @Valid @PathVariable("clientId") String clientId,
+                                                            @Valid @PathVariable("offsetId") long offsetId) {
+        Properties kafkaProps = new Properties();
+        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
+        kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG,groupId);
+        kafkaProps.put("key.deserializer", properties.getKeyDeSerializer());
+        kafkaProps.put("value.deserializer", properties.getValueDeSerializer());
+        kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getEnableAutoCommit());
+        kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
+        kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
+        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
+        consumer.subscribe(Arrays.asList(topicName), new HandleRebalance(consumer, offsetId));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+        ResponseEntity<ResponseGetTopic> response = new ResponseEntity<>(new ResponseGetTopic(records), HttpStatus.OK);
+        consumer.unsubscribe();
+        return response;
+    }
+    @RequestMapping(value = "/topics/{topic}/allrecords/{groupId}/{clientId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ResponseGetTopic> getTopicAllRecords(@Valid @PathVariable("topic") String topicName,
                                                             @Valid @PathVariable("groupId") String groupId,
                                                             @Valid @PathVariable("clientId") String clientId) {
         Properties kafkaProps = new Properties();
