@@ -24,6 +24,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class HandleRebalance implements ConsumerRebalanceListener {
     private KafkaConsumer<?, ?> consumer;
@@ -40,8 +41,10 @@ public class HandleRebalance implements ConsumerRebalanceListener {
 
     @Override
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-        for (TopicPartition partition : partitions) {
-            consumer.seek(partition, offset);
+        Map<TopicPartition, Long> offsets = consumer.endOffsets(partitions);
+        for (Map.Entry<TopicPartition,Long> current : offsets.entrySet()) {
+            if (current.getValue() > offset)
+                consumer.seek(current.getKey(), offset);
         }
     }
 }

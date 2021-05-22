@@ -1,0 +1,5 @@
+{
+  "topic_name" : "test",
+  "num_partitions" : 1,
+  "replication_factor" : 1
+}

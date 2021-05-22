@@ -19,6 +19,7 @@
  */
 package gdimitriu.kafka_app.controllers.rest;
 
+import gdimitriu.kafka_app.dao.RequestCreateTopic;
 import gdimitriu.kafka_app.dao.RequestPostTopic;
 import gdimitriu.kafka_app.dao.ResponseGetTopic;
 import gdimitriu.kafka_app.properties.KafkaProperties;
@@ -29,6 +30,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.admin.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +41,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/kafka/client")
@@ -114,5 +116,76 @@ public class KafkaRestClientController {
         ResponseEntity<ResponseGetTopic> response = new ResponseEntity<>(new ResponseGetTopic(records), HttpStatus.OK);
         consumer.unsubscribe();
         return response;
+    }
+
+    @RequestMapping(value = "/topics/{topic}/{numPartition}/{replicationFactor}", method = RequestMethod.POST, produces = {MediaType.ALL_VALUE})
+    public ResponseEntity<?> createTopic(@Valid @PathVariable("topic") String topicName,
+                                                               @Valid @PathVariable("numPartition") Integer numPartitions,
+                                                               @Valid @PathVariable("replicationFactor") Short replicationFactor) {
+        Properties kafkaProps = new Properties();
+        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
+        AdminClient adminClient = AdminClient.create(kafkaProps);
+        ListTopicsResult topics = adminClient.listTopics();
+        try {
+            if (topics.names().get().contains(topicName)) {
+                return new ResponseEntity<>("Topic already exists", HttpStatus.CREATED);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        NewTopic newTopic = new NewTopic(topicName, numPartitions, replicationFactor);
+        List<NewTopic> newTopics = new ArrayList<NewTopic>();
+        newTopics.add(newTopic);
+        adminClient.createTopics(newTopics);
+        adminClient.close();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/createtopic", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.ALL_VALUE})
+    public ResponseEntity<?> createOneTopic(@Valid @RequestBody RequestCreateTopic dataTopic) {
+        Properties kafkaProps = new Properties();
+        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
+        AdminClient adminClient = AdminClient.create(kafkaProps);
+        ListTopicsResult topics = adminClient.listTopics();
+        try {
+            if (topics.names().get().contains(dataTopic.getTopicName())) {
+                return new ResponseEntity<>("Topic already exists", HttpStatus.CREATED);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        NewTopic newTopic = new NewTopic(dataTopic.getTopicName(), dataTopic.getNumPartitions(), dataTopic.getReplicationFactor());
+        List<NewTopic> newTopics = new ArrayList<NewTopic>();
+        newTopics.add(newTopic);
+        adminClient.createTopics(newTopics);
+        adminClient.close();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/infotopic/{topic}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> createOneTopic(@Valid @PathVariable("topic") String topicName) {
+        Properties kafkaProps = new Properties();
+        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
+        AdminClient adminClient = AdminClient.create(kafkaProps);
+        ListTopicsResult topics = adminClient.listTopics();
+        try {
+            if (topics.names().get().contains(topicName)) {
+                RequestCreateTopic result = new RequestCreateTopic();
+                TopicDescription described = adminClient.describeTopics(Arrays.asList(topicName))
+                        .all().get().get(topicName);
+                result.setTopicName(topicName);
+                result.setNumPartitions(described.partitions().size());
+                result.setReplicationFactor((short) 0);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Topic does not exist\n", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

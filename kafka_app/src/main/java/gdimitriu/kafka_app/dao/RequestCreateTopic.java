@@ -22,30 +22,40 @@ package gdimitriu.kafka_app.dao;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class RequestPostTopic {
-    private String key;
-    private String value;
+public class RequestCreateTopic {
+    private String topicName;
+    private Integer numPartitions;
+    private Short replicationFactor;
 
-    public RequestPostTopic() {}
+    public RequestCreateTopic() {}
 
-    public RequestPostTopic(String key, String value) {
-        this.key = key;
-        this.value = value;
+    public RequestCreateTopic(String topicName, Integer numPartitions, Short replicationFactor) {
+        this.topicName = topicName;
+        this.numPartitions = numPartitions;
+        this.replicationFactor = replicationFactor;
     }
 
-    public String getKey() {
-        return key;
+    public String getTopicName() {
+        return topicName;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setTopicName(String topicName) {
+        this.topicName = topicName;
     }
 
-    public String getValue() {
-        return value;
+    public Integer getNumPartitions() {
+        return numPartitions;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setNumPartitions(Integer numPartitions) {
+        this.numPartitions = numPartitions;
+    }
+
+    public Short getReplicationFactor() {
+        return replicationFactor;
+    }
+
+    public void setReplicationFactor(Short replicationFactor) {
+        this.replicationFactor = replicationFactor;
     }
 }
