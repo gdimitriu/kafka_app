@@ -1,5 +1,5 @@
 server:
-  port: 1080
+  port: 8080
 kafka:
   bootstrap:
     servers: localhost:9093
