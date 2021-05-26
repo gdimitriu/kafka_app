@@ -1,0 +1,42 @@
+/*
+ Copyright (c) 2021 Gabriel Dimitriu All rights reserved.
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+
+ This file is part of Kafka_cxf project.
+
+ Kafka_cxf is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Kafka_cxf is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Kafka_cxf.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package gdimitriu.kafka_cxf.dao;
+
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ResponseGetTopic {
+    private List<gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper> records;
+
+    public ResponseGetTopic(ConsumerRecords<String,String> recordsKafka) {
+        records = new ArrayList<>();
+        recordsKafka.forEach(a -> records.add(new gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper(a)));
+    }
+
+    public List<gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper> getRecords() {
+        return records;
+    }
+
+    public void setRecords(List<gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper> records) {
+        this.records = records;
+    }
+}
