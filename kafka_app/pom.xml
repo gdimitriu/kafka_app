@@ -39,7 +39,7 @@
                             <alias>kafka_app</alias>
                             <build>
                                 <from>adoptopenjdk/openjdk13:jdk-13.0.2_8-ubuntu-slim</from>
-                                <ports>1080</ports>
+                                <ports>8080</ports>
                                 <env>
                                     <exposeRestPort>8080</exposeRestPort>
                                     <kafkaPort>9093</kafkaPort>

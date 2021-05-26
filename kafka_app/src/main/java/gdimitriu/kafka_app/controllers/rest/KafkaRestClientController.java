@@ -165,6 +165,25 @@ public class KafkaRestClientController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/topics/{topic}", method = RequestMethod.DELETE, produces = {MediaType.ALL_VALUE})
+    public ResponseEntity<?> deleteTopic(@Valid @PathVariable("topic") String topicName) {
+        Properties kafkaProps = new Properties();
+        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
+        AdminClient adminClient = AdminClient.create(kafkaProps);
+        ListTopicsResult topics = adminClient.listTopics();
+        try {
+            if (!topics.names().get().contains(topicName)) {
+                return new ResponseEntity<>("Topic does not exists", HttpStatus.NOT_FOUND);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        adminClient.deleteTopics(Arrays.asList(topicName));
+        adminClient.close();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/infotopic/{topic}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> createOneTopic(@Valid @PathVariable("topic") String topicName) {
         Properties kafkaProps = new Properties();
