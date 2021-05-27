@@ -21,6 +21,7 @@ package gdimitriu.kafka_cxf.application.server;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import gdimitriu.kafka_cxf.controllers.KafkaRESTClientController;
+import gdimitriu.kafka_cxf.properties.RESTProperties;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -37,6 +38,9 @@ public class CXFRESTServer {
     @Autowired
     private KafkaRESTClientController restController;
 
+    @Autowired
+    private RESTProperties restProperties;
+
     CXFRESTServer() {
     }
 
@@ -45,7 +49,7 @@ public class CXFRESTServer {
         restServer = new JAXRSServerFactoryBean();
         restServer.setProvider(new JacksonJaxbJsonProvider());
         restServer.setServiceBean(restController);
-        restServer.setAddress("http://localhost:8180/");
+        restServer.setAddress("http://localhost:" + restProperties.getPort());
         restServer.create();
     }
 }
