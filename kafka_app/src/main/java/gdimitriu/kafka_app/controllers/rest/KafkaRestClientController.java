@@ -128,7 +128,7 @@ public class KafkaRestClientController {
         ListTopicsResult topics = adminClient.listTopics();
         try {
             if (topics.names().get().contains(topicName)) {
-                return new ResponseEntity<>("Topic already exists", HttpStatus.CREATED);
+                return new ResponseEntity<>("Topic already exists", HttpStatus.ACCEPTED);
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -181,7 +181,7 @@ public class KafkaRestClientController {
         }
         adminClient.deleteTopics(Arrays.asList(topicName));
         adminClient.close();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("topic deleted", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/infotopic/{topic}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
