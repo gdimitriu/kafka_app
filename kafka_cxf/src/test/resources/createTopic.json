@@ -1,0 +1,5 @@
+{
+  "topicName" : "test",
+  "numPartitions" : 1,
+  "replicationFactor" : 1
+}

@@ -17,16 +17,35 @@
  You should have received a copy of the GNU General Public License
  along with Kafka_app.  If not, see <http://www.gnu.org/licenses/>.
  */
-package gdimitriu.kafka_cxf.application;
+package gdimitriu.kafka_cxf.application.server;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import gdimitriu.kafka_cxf.controllers.KafkaRESTClientController;
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Controller;
 
-@SpringBootApplication
+import javax.annotation.PostConstruct;
+
+@Controller
 @ComponentScan(basePackages = "gdimitriu.kafka_cxf")
-public class KafkaApplicationCXF {
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaApplicationCXF.class, args);
+public class CXFRESTServer {
+
+    private JAXRSServerFactoryBean restServer;
+
+    @Autowired
+    private KafkaRESTClientController restController;
+
+    CXFRESTServer() {
+    }
+
+    @PostConstruct
+    void startServer() {
+        restServer = new JAXRSServerFactoryBean();
+        restServer.setProvider(new JacksonJaxbJsonProvider());
+        restServer.setServiceBean(restController);
+        restServer.setAddress("http://localhost:8180/");
+        restServer.create();
     }
 }
