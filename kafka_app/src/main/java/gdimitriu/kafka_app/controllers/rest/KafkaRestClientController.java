@@ -185,7 +185,7 @@ public class KafkaRestClientController {
     }
 
     @RequestMapping(value = "/infotopic/{topic}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> createOneTopic(@Valid @PathVariable("topic") String topicName) {
+    public ResponseEntity<?> infoOneTopic(@Valid @PathVariable("topic") String topicName) {
         Properties kafkaProps = new Properties();
         kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
         AdminClient adminClient = AdminClient.create(kafkaProps);
