@@ -28,6 +28,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
+import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
 
 @Controller
 @ComponentScan(basePackages = "gdimitriu.kafka_cxf")
@@ -44,11 +47,18 @@ public class CXFRESTServer {
     CXFRESTServer() {
     }
 
+    private OpenApiFeature feature;
+
     @PostConstruct
     void startServer() {
         restServer = new JAXRSServerFactoryBean();
+        feature = new OpenApiFeature();
+        feature.setSwaggerUiConfig(
+                new SwaggerUiConfig()
+                        .url("/kafka/client/openapi.json"));
         restServer.setProvider(new JacksonJaxbJsonProvider());
         restServer.setServiceBean(restController);
+        restServer.setFeatures(Arrays.asList(feature));
         restServer.setAddress("http://localhost:" + restProperties.getPort());
         restServer.create();
     }

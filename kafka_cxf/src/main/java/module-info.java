@@ -31,6 +31,8 @@ module kafka.cxf {
     requires jakarta.activation;
     requires org.apache.cxf.frontend.jaxrs;
     requires com.fasterxml.jackson.jaxrs.json;
+    requires org.apache.cxf.rs.openapi.v3;
+    requires org.apache.cxf.rs.swagger.ui;
     opens gdimitriu.kafka_cxf.application to spring.core,spring.beans, spring.context;
     opens gdimitriu.kafka_cxf.application.server to spring.core,spring.beans, spring.context, org.apache.cxf.frontend.jaxrs;
     opens gdimitriu.kafka_cxf.dao to spring.core,spring.beans, spring.context, com.fasterxml.jackson.databind;
