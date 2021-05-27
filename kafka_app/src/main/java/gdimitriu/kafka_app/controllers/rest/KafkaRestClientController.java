@@ -72,7 +72,7 @@ public class KafkaRestClientController {
             e.printStackTrace();
             return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("success", HttpStatus.OK);
+        return new ResponseEntity<>("success\n", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/topics/{topic}/records/{groupId}/{clientId}/{offsetId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -128,7 +128,7 @@ public class KafkaRestClientController {
         ListTopicsResult topics = adminClient.listTopics();
         try {
             if (topics.names().get().contains(topicName)) {
-                return new ResponseEntity<>("Topic already exists", HttpStatus.ACCEPTED);
+                return new ResponseEntity<>("Topic already exists\n", HttpStatus.ACCEPTED);
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -151,7 +151,7 @@ public class KafkaRestClientController {
         ListTopicsResult topics = adminClient.listTopics();
         try {
             if (topics.names().get().contains(dataTopic.getTopicName())) {
-                return new ResponseEntity<>("Topic already exists", HttpStatus.CREATED);
+                return new ResponseEntity<>("Topic already exists\n", HttpStatus.CREATED);
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -173,7 +173,7 @@ public class KafkaRestClientController {
         ListTopicsResult topics = adminClient.listTopics();
         try {
             if (!topics.names().get().contains(topicName)) {
-                return new ResponseEntity<>("Topic does not exists", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Topic does not exists\n", HttpStatus.NOT_FOUND);
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -181,7 +181,7 @@ public class KafkaRestClientController {
         }
         adminClient.deleteTopics(Arrays.asList(topicName));
         adminClient.close();
-        return new ResponseEntity<>("topic deleted", HttpStatus.OK);
+        return new ResponseEntity<>("topic deleted\n", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/infotopic/{topic}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
