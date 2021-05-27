@@ -140,7 +140,7 @@ public class KafkaRestClientController {
         newTopics.add(newTopic);
         adminClient.createTopics(newTopics);
         adminClient.close();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("topic created\n",HttpStatus.OK);
     }
 
     @RequestMapping(value = "/createtopic", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.ALL_VALUE})
@@ -162,7 +162,7 @@ public class KafkaRestClientController {
         newTopics.add(newTopic);
         adminClient.createTopics(newTopics);
         adminClient.close();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("topic created\n",HttpStatus.OK);
     }
 
     @RequestMapping(value = "/topics/{topic}", method = RequestMethod.DELETE, produces = {MediaType.ALL_VALUE})
