@@ -8,7 +8,6 @@
             <includes>
                 <include>kafka_cxf.yaml</include>
             </includes>
-
         </fileSet>
     </fileSets>
 </assembly>
