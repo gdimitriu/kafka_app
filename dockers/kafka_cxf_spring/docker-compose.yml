@@ -1,0 +1,53 @@
+version: "3"
+networks:
+  app-tier:
+    driver: bridge
+services:
+    zookeeper:
+        image: 'bitnami/zookeeper:latest'
+        networks:
+            - app-tier
+        ports:
+            - '2181:2181'
+        environment:
+            - ALLOW_ANONYMOUS_LOGIN=yes
+            - ZOO_SERVER_ID=1
+    kafka:
+        image: 'bitnami/kafka:latest'
+        networks:
+            - app-tier
+        ports:
+            - '9092:9092'
+            - '9093:9093'
+        environment:
+            - KAFKA_BROKER_ID=1
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - ALLOW_PLAINTEXT_LISTENER=yes
+            - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+            - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+            - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+            - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
+        depends_on:
+            - zookeeper
+    service_spring:
+        image: 'gdimitriu/kafka_app:1.0-SNAPSHOT'
+        networks:
+            - app-tier
+        ports:
+            - '9080:9080'
+        environment:
+            - exposeRestPort=9080
+            - kafkaPort=kafka:9092
+        depends_on:
+            - kafka
+    service_cxf:
+        image: 'gdimitriu/kafka_cxf:1.0-SNAPSHOT'
+        networks:
+            - app-tier
+        ports:
+            - '9180:9180'
+        environment:
+            - exposeRestPort=9180
+            - kafkaPort=kafka:9092
+        depends_on:
+            - kafka
