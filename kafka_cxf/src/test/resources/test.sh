@@ -1,6 +1,6 @@
 #!/bin/bash
-curl -X POST -H "Content-Type:application/json" http://localhost:8180/kafka/client/createtopic -d @createTopic.json
-curl -X POST -H "Content-Type:application/json" http://localhost:8180/kafka/client/topics/test -d @first.json
-curl -X GET http://localhost:8180/kafka/client/topics/test/allrecords/myGroupId/myClientId
-curl -X GET http://localhost:8180/kafka/client/topics/test/records/myconsumer/myid/0
-curl -X DELETE http://localhost:8180/kafka/client/topics/test
+curl -X POST -H "Content-Type:application/json" http://localhost:9180/kafka/client/createtopic -d @createTopic.json -u user:user
+curl -X POST -H "Content-Type:application/json" http://localhost:9180/kafka/client/topics/test -d @first.json -u user:user
+curl -X GET http://localhost:9180/kafka/client/topics/test/allrecords/myGroupId/myClientId -u user:user
+curl -X GET http://localhost:9180/kafka/client/topics/test/records/myconsumer/myid/0 -u user:user
+curl -X DELETE http://localhost:9180/kafka/client/topics/test -u user:user
