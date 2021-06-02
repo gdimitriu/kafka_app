@@ -28,6 +28,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
@@ -59,7 +61,13 @@ public class CXFRESTServer {
         restServer.setProvider(new JacksonJaxbJsonProvider());
         restServer.setServiceBean(restController);
         restServer.setFeatures(Arrays.asList(feature));
-        restServer.setAddress("http://localhost:" + restProperties.getPort());
+        restServer.setProvider(new AuthenticationHandler());
+        String hostname = "localhost";
+        try {
+            hostname = InetAddress.getLocalHost().getCanonicalHostName();
+        } catch (UnknownHostException e) {
+        }
+        restServer.setAddress("http://" + hostname + ":" + restProperties.getPort());
         restServer.create();
     }
 }
