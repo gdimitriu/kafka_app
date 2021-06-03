@@ -46,8 +46,10 @@ services:
             - app-tier
         ports:
             - '9180:9180'
+            - '9182:9182'
         environment:
             - exposeRestPort=9180
+            - exposeWSPort=9182
             - kafkaPort=kafka:9092
         depends_on:
             - kafka
