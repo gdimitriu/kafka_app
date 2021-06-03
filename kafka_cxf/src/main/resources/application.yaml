@@ -1,5 +1,8 @@
-server:
+serverrest:
   port: 8180
+serverws:
+  port: 8190
+
 kafka:
   bootstrap:
     servers: localhost:9093

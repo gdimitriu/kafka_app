@@ -26,11 +26,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 
-@ConfigurationProperties(prefix="serverrest")
-public class RESTProperties {
-    private static final Logger log = LoggerFactory.getLogger(RESTProperties.class);
+@ConfigurationProperties(prefix="serverws")
+public class WSProperties {
+    private static final Logger log = LoggerFactory.getLogger(WSProperties.class);
 
-    @Value("${serverrest.port}")
+    @Value("${serverws.port}")
     private Integer port;
 
     public Integer getPort() {
@@ -43,6 +43,6 @@ public class RESTProperties {
 
     @PostConstruct
     public void printMySelf() {
-        log.info("rest server port: " + port);
+        log.info("ws server port: " + port);
     }
 }

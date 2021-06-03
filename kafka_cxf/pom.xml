@@ -42,6 +42,7 @@
                                 <ports>8180</ports>
                                 <env>
                                     <exposeRestPort>8180</exposeRestPort>
+                                    <exposeWSPort>8190</exposeWSPort>
                                     <kafkaPort>localhost:9093</kafkaPort>
                                 </env>
                                 <entryPoint>
@@ -142,6 +143,12 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -190,5 +197,16 @@
             <version>2.5.11</version>
         </dependency>
 
+        <!-- soap -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${CXF.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-bindings-soap</artifactId>
+            <version>${CXF.version}</version>
+        </dependency>
     </dependencies>
 </project>

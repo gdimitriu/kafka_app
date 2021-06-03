@@ -19,12 +19,19 @@
  */
 package gdimitriu.kafka_cxf.dao;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JacksonXmlRootElement(localName = "response")
 public class ResponseGetTopic {
+    @JacksonXmlElementWrapper(localName = "record")
+    @JacksonXmlProperty(localName = "record")
     private List<gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper> records;
 
     public ResponseGetTopic(ConsumerRecords<String,String> recordsKafka) {

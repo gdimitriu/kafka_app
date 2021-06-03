@@ -19,30 +19,10 @@
  */
 package gdimitriu.kafka_cxf.properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-
-@ConfigurationProperties(prefix="serverrest")
-public class RESTProperties {
-    private static final Logger log = LoggerFactory.getLogger(RESTProperties.class);
-
-    @Value("${serverrest.port}")
-    private Integer port;
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    @PostConstruct
-    public void printMySelf() {
-        log.info("rest server port: " + port);
-    }
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(WSProperties.class)
+public class WSConfiguration {
 }
