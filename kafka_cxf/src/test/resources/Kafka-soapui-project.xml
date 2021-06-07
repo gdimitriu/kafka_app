@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="fc19875d-611a-4c10-995e-de183d240152" activeEnvironment="Default" name="Kafka" resourceRoot="" soapui-version="5.6.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="d35f149a-3ef3-47a4-9372-f99c99984ff1" wsaVersion="NONE" name="KafkaWSClientControllerServiceSoapBinding" type="wsdl" bindingName="{http://controllers.kafka_cxf.gdimitriu/}KafkaWSClientControllerServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9182/Kafka?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9182/Kafka?wsdl"><con:part><con:url>http://localhost:9182/Kafka?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="KafkaWSClientControllerService" targetNamespace="http://controllers.kafka_cxf.gdimitriu/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://controllers.kafka_cxf.gdimitriu/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http">
+  <wsdl:types>
+    <xs:schema elementFormDefault="unqualified" targetNamespace="http://controllers.kafka_cxf.gdimitriu/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="allrecords" type="tns:allrecords"/>
+      <xs:element name="allrecordsResponse" type="tns:allrecordsResponse"/>
+      <xs:element name="createtopic" type="tns:createtopic"/>
+      <xs:element name="createtopicResponse" type="tns:createtopicResponse"/>
+      <xs:element name="deletetopic" type="tns:deletetopic"/>
+      <xs:element name="deletetopicResponse" type="tns:deletetopicResponse"/>
+      <xs:element name="info" type="tns:info"/>
+      <xs:element name="infoResponse" type="tns:infoResponse"/>
+      <xs:element name="infotopic" type="tns:infotopic"/>
+      <xs:element name="infotopicResponse" type="tns:infotopicResponse"/>
+      <xs:element name="posttopic" type="tns:posttopic"/>
+      <xs:element name="posttopicResponse" type="tns:posttopicResponse"/>
+      <xs:element name="records" type="tns:records"/>
+      <xs:element name="recordsResponse" type="tns:recordsResponse"/>
+      <xs:complexType name="infotopic">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="infotopicResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="tns:requestCreateTopic"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requestCreateTopic">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="numPartitions" type="xs:int"/>
+          <xs:element minOccurs="0" name="replicationFactor" type="xs:short"/>
+          <xs:element minOccurs="0" name="topicName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="info">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="infoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="deletetopic">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="deletetopicResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createtopic">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="tns:requestCreateTopic"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="createtopicResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="allrecords">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="tns:requestGetTopicRecords"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requestGetTopicRecords">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="clientId" type="xs:string"/>
+          <xs:element minOccurs="0" name="groupId" type="xs:string"/>
+          <xs:element name="offsetId" type="xs:long"/>
+          <xs:element minOccurs="0" name="topicName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="allrecordsResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="tns:responseGetTopic"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="responseGetTopic">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="records" nillable="true" type="tns:consumerRecordWrapper"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="consumerRecordWrapper">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="key" type="xs:string"/>
+          <xs:element name="offset" type="xs:long"/>
+          <xs:element name="partition" type="xs:int"/>
+          <xs:element name="timestamp" type="xs:long"/>
+          <xs:element minOccurs="0" name="topic" type="xs:string"/>
+          <xs:element minOccurs="0" name="value" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="posttopic">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+          <xs:element minOccurs="0" name="arg1" type="tns:requestPostTopic"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requestPostTopic">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="key" type="xs:string"/>
+          <xs:element minOccurs="0" name="value" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="posttopicResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="records">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="tns:requestGetTopicRecords"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="recordsResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="tns:responseGetTopic"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="info">
+    <wsdl:part element="tns:info" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deletetopicResponse">
+    <wsdl:part element="tns:deletetopicResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="recordsResponse">
+    <wsdl:part element="tns:recordsResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="allrecordsResponse">
+    <wsdl:part element="tns:allrecordsResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createtopicResponse">
+    <wsdl:part element="tns:createtopicResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="allrecords">
+    <wsdl:part element="tns:allrecords" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="infotopic">
+    <wsdl:part element="tns:infotopic" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deletetopic">
+    <wsdl:part element="tns:deletetopic" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="posttopicResponse">
+    <wsdl:part element="tns:posttopicResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="infoResponse">
+    <wsdl:part element="tns:infoResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="infotopicResponse">
+    <wsdl:part element="tns:infotopicResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createtopic">
+    <wsdl:part element="tns:createtopic" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="posttopic">
+    <wsdl:part element="tns:posttopic" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="records">
+    <wsdl:part element="tns:records" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="Kafka">
+    <wsdl:operation name="infotopic">
+      <wsdl:input message="tns:infotopic" name="infotopic"></wsdl:input>
+      <wsdl:output message="tns:infotopicResponse" name="infotopicResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="info">
+      <wsdl:input message="tns:info" name="info"></wsdl:input>
+      <wsdl:output message="tns:infoResponse" name="infoResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletetopic">
+      <wsdl:input message="tns:deletetopic" name="deletetopic"></wsdl:input>
+      <wsdl:output message="tns:deletetopicResponse" name="deletetopicResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createtopic">
+      <wsdl:input message="tns:createtopic" name="createtopic"></wsdl:input>
+      <wsdl:output message="tns:createtopicResponse" name="createtopicResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="allrecords">
+      <wsdl:input message="tns:allrecords" name="allrecords"></wsdl:input>
+      <wsdl:output message="tns:allrecordsResponse" name="allrecordsResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="posttopic">
+      <wsdl:input message="tns:posttopic" name="posttopic"></wsdl:input>
+      <wsdl:output message="tns:posttopicResponse" name="posttopicResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="records">
+      <wsdl:input message="tns:records" name="records"></wsdl:input>
+      <wsdl:output message="tns:recordsResponse" name="recordsResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="KafkaWSClientControllerServiceSoapBinding" type="tns:Kafka">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="infotopic">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="infotopic">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="infotopicResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="info">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="info">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="infoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletetopic">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="deletetopic">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deletetopicResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createtopic">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="createtopic">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createtopicResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="allrecords">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="allrecords">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="allrecordsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="posttopic">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="posttopic">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="posttopicResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="records">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="records">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="recordsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="KafkaWSClientControllerService">
+    <wsdl:port binding="tns:KafkaWSClientControllerServiceSoapBinding" name="KafkaPort">
+      <soap:address location="http://localhost:9182/Kafka"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9182/Kafka</con:endpoint></con:endpoints><con:operation id="1f7ef78a-fb29-4332-ab70-beccca66f74c" isOneWay="false" action="" name="allrecords" bindingOperationName="allrecords" type="Request-Response" outputName="allrecordsResponse" inputName="allrecords" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="dbba7f95-aba9-4604-b621-5f50efcaeaf8" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9182/Kafka</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://controllers.kafka_cxf.gdimitriu/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:allrecords>
+         <!--Optional:-->
+         <arg0>
+            <!--Optional:-->
+            <clientId>myClient</clientId>
+            <!--Optional:-->
+            <groupId>myGroup</groupId>
+            <offsetId>0</offsetId>
+            <!--Optional:-->
+            <topicName>test</topicName>
+         </arg0>
+      </con:allrecords>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://controllers.kafka_cxf.gdimitriu/Kafka/allrecords"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="46799e87-0a3b-4366-9f6e-8f1f08a445be" isOneWay="false" action="" name="createtopic" bindingOperationName="createtopic" type="Request-Response" outputName="createtopicResponse" inputName="createtopic" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="e6a43060-b414-4c3b-b84e-a13a55dbe18f" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9182/Kafka</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://controllers.kafka_cxf.gdimitriu/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:createtopic>
+         <!--Optional:-->
+         <arg0>
+            <!--Optional:-->
+            <numPartitions>2</numPartitions>
+            <!--Optional:-->
+            <replicationFactor>1</replicationFactor>
+            <!--Optional:-->
+            <topicName>test</topicName>
+         </arg0>
+      </con:createtopic>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://controllers.kafka_cxf.gdimitriu/Kafka/createtopic"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="26969e2d-5e58-4969-aef3-6b3a48725855" isOneWay="false" action="" name="deletetopic" bindingOperationName="deletetopic" type="Request-Response" outputName="deletetopicResponse" inputName="deletetopic" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="956129a5-193c-4f25-b243-10b0331d4f08" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9182/Kafka</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://controllers.kafka_cxf.gdimitriu/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:deletetopic>
+         <!--Optional:-->
+         <arg0>test</arg0>
+      </con:deletetopic>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://controllers.kafka_cxf.gdimitriu/Kafka/deletetopic"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="5fb57af1-1a4f-4d03-a073-30e9e77b1181" isOneWay="false" action="" name="info" bindingOperationName="info" type="Request-Response" outputName="infoResponse" inputName="info" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="281032bd-ee67-4844-bc85-fe45bcc20dfa" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9182/Kafka</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://controllers.kafka_cxf.gdimitriu/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:info/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://controllers.kafka_cxf.gdimitriu/Kafka/info"/></con:call></con:operation><con:operation id="c6d747ad-fa58-491d-b4bf-4eef818d001a" isOneWay="false" action="" name="infotopic" bindingOperationName="infotopic" type="Request-Response" outputName="infotopicResponse" inputName="infotopic" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="e4fb02aa-1ccb-4be0-b40f-e732b7921e1c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9182/Kafka</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://controllers.kafka_cxf.gdimitriu/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:infotopic>
+         <!--Optional:-->
+         <arg0>test</arg0>
+      </con:infotopic>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://controllers.kafka_cxf.gdimitriu/Kafka/infotopic"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="d08cfc11-8d68-48d6-a0bd-d0df5426a863" isOneWay="false" action="" name="posttopic" bindingOperationName="posttopic" type="Request-Response" outputName="posttopicResponse" inputName="posttopic" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="94bef725-ccac-4f8a-aa55-47550f148495" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9182/Kafka</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://controllers.kafka_cxf.gdimitriu/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:posttopic>
+         <!--Optional:-->
+         <arg0>test</arg0>
+         <!--Optional:-->
+         <arg1>
+            <!--Optional:-->
+            <key>12345</key>
+            <!--Optional:-->
+            <value>first test</value>
+         </arg1>
+      </con:posttopic>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://controllers.kafka_cxf.gdimitriu/Kafka/posttopic"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="85467457-90e1-40e2-b84c-ed171a672c74" isOneWay="false" action="" name="records" bindingOperationName="records" type="Request-Response" outputName="recordsResponse" inputName="records" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c073e378-8153-4b9a-bd07-d0c4dca6a5b3" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9182/Kafka</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://controllers.kafka_cxf.gdimitriu/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:records>
+         <!--Optional:-->
+         <arg0>
+            <!--Optional:-->
+            <clientId>myClient</clientId>
+            <!--Optional:-->
+            <groupId>myGroup</groupId>
+            <offsetId>0</offsetId>
+            <!--Optional:-->
+            <topicName>test</topicName>
+         </arg0>
+      </con:records>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://controllers.kafka_cxf.gdimitriu/Kafka/records"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>
