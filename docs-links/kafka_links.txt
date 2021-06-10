@@ -1,0 +1,19 @@
+#kafka
+https://kafka.apache.org/quickstart
+https://hub.docker.com/r/bitnami/kafka
+https://kafka.apache.org/11/javadoc/allclasses-noframe.html
+https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+https://www.baeldung.com/spring-kafka
+https://docs.spring.io/spring-kafka/reference/html/#kafka
+
+#zookeeper
+https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_adminserver
+https://hub.docker.com/r/bitnami/zookeeper
+
+#kafka confluent
+https://docs.confluent.io/3.1.1/kafka-rest/docs/intro.html
+https://www.confluent.io/blog/a-comprehensive-rest-proxy-for-kafka/
+https://docs.confluent.io/platform/current/kafka-rest/api.html
+https://docs.confluent.io/platform/current/tutorials/examples/clients/docs/rest-proxy.html
+
+

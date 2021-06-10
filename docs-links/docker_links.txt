@@ -1,0 +1,6 @@
+#docker maven plugin
+https://dmp.fabric8.io/#docker:start
+
+
+#docker
+https://docs.docker.com/compose/gettingstarted/
