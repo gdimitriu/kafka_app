@@ -1,6 +1,9 @@
 #docker maven plugin
 https://dmp.fabric8.io/#docker:start
 
+#gradle docker plugin (not tried yet)
+https://bmuschko.github.io/gradle-docker-plugin/
+https://github.com/avast/gradle-docker-compose-plugin
 
 #docker
 https://docs.docker.com/compose/gettingstarted/
