@@ -57,7 +57,7 @@ public class CXFRESTServer {
         feature = new OpenApiFeature();
         feature.setSwaggerUiConfig(
                 new SwaggerUiConfig()
-                        .url("/kafka/client/openapi.json"));
+                        .url("/openapi.json"));
         restServer.setProvider(new JacksonJaxbJsonProvider());
         restServer.setServiceBean(restController);
         restServer.setFeatures(Arrays.asList(feature));

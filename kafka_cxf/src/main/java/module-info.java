@@ -36,11 +36,12 @@ module kafka.cxf {
     requires org.apache.cxf.core;
     requires org.apache.cxf.frontend.jaxws;
     requires java.jws;
+    requires swagger.ui;
     requires com.fasterxml.jackson.dataformat.xml;
     opens gdimitriu.kafka_cxf.application to spring.core,spring.beans, spring.context;
     opens gdimitriu.kafka_cxf.application.server to spring.core,spring.beans, spring.context, org.apache.cxf.frontend.jaxrs;
-    opens gdimitriu.kafka_cxf.dao to spring.core,spring.beans, spring.context, com.fasterxml.jackson.databind;
+    opens gdimitriu.kafka_cxf.dao to spring.core,spring.beans, spring.context, com.fasterxml.jackson.databind, swagger.ui;
     opens gdimitriu.kafka_cxf.properties to spring.core,spring.beans, spring.context, spring.boot;
-    opens gdimitriu.kafka_cxf.controllers to spring.core,spring.beans, spring.context, spring.boot, gdimitriu.kafka_cxf.application.server;
+    opens gdimitriu.kafka_cxf.controllers to spring.core,spring.beans, spring.context, spring.boot, gdimitriu.kafka_cxf.application.server, swagger.ui;
 
 }

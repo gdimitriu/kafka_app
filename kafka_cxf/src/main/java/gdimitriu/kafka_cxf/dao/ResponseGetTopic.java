@@ -34,6 +34,9 @@ public class ResponseGetTopic {
     @JacksonXmlProperty(localName = "record")
     private List<gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper> records;
 
+    public ResponseGetTopic() {
+
+    }
     public ResponseGetTopic(ConsumerRecords<String,String> recordsKafka) {
         records = new ArrayList<>();
         recordsKafka.forEach(a -> records.add(new gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper(a)));

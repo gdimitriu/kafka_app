@@ -32,6 +32,10 @@ public class ConsumerRecordWrapper {
     private String key;
     private String value;
 
+    public ConsumerRecordWrapper() {
+
+    }
+
     public ConsumerRecordWrapper(ConsumerRecord<String, String> consumerRecord) {
         topic = consumerRecord.topic();
         partition = consumerRecord.partition();
