@@ -30,7 +30,6 @@ import org.springframework.stereotype.Controller;
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
 
@@ -60,7 +59,7 @@ public class CXFRESTServer {
                         .url("/openapi.json"));
         restServer.setProvider(new JacksonJaxbJsonProvider());
         restServer.setServiceBean(restController);
-        restServer.setFeatures(Arrays.asList(feature));
+        restServer.getFeatures().add(feature);
         restServer.setProvider(new AuthenticationHandler());
         String hostname = "localhost";
         try {

@@ -36,6 +36,9 @@ public class AuthenticationHandler implements ContainerRequestFilter {
         if(requestContext.getUriInfo().getPath().equals("openapi.json")) {
             return;
         }
+        if(requestContext.getUriInfo().getPath().contains("api-docs")) {
+            return;
+        }
         String authorization = requestContext.getHeaderString("Authorization");
         String[] parts = authorization.split(" ");
         if (parts.length != 2 || !"Basic".equals(parts[0])) {
