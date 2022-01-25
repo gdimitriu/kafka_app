@@ -40,6 +40,10 @@ public class AuthenticationHandler implements ContainerRequestFilter {
             return;
         }
         String authorization = requestContext.getHeaderString("Authorization");
+        if (authorization == null) {
+            requestContext.abortWith(createFaultResponse());
+            return;
+        }
         String[] parts = authorization.split(" ");
         if (parts.length != 2 || !"Basic".equals(parts[0])) {
             requestContext.abortWith(createFaultResponse());
