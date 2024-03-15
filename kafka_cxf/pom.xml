@@ -18,7 +18,7 @@
         <springboot.version>2.4.5</springboot.version>
         <jackson.version>2.12.3</jackson.version>
         <log4j.version>2.17.1</log4j.version>
-        <CXF.version>3.4.10</CXF.version>
+        <CXF.version>3.5.8</CXF.version>
     </properties>
     <build>
         <plugins>
