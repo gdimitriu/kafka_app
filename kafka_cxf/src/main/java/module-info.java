@@ -26,7 +26,6 @@ module kafka.cxf {
     requires spring.beans;
     requires java.annotation;
     requires org.slf4j;
-    requires java.ws.rs;
     requires java.validation;
     requires jakarta.activation;
     requires org.apache.cxf.frontend.jaxrs;
@@ -35,6 +34,7 @@ module kafka.cxf {
     requires org.apache.cxf.rs.swagger.ui;
     requires org.apache.cxf.core;
     requires org.apache.cxf.frontend.jaxws;
+    requires java.ws.rs;
     requires java.jws;
     requires swagger.ui;
     requires com.fasterxml.jackson.dataformat.xml;
