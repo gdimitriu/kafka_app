@@ -36,6 +36,7 @@ module gdimitriu.kafka_app {
     requires spring.security.core;
     requires spring.security.config;
     requires java.validation;
+    requires spring.security.crypto;
     opens gdimitriu.kafka_app.security to spring.core,spring.core.security,spring.beans, spring.context;
     opens gdimitriu.kafka_app.application to spring.core,spring.beans, spring.context;
     opens gdimitriu.kafka_app.dao to spring.core,spring.beans, spring.context, com.fasterxml.jackson.databind;
