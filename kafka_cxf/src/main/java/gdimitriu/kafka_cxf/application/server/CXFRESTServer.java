@@ -19,7 +19,7 @@
  */
 package gdimitriu.kafka_cxf.application.server;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import gdimitriu.kafka_cxf.controllers.KafkaRESTClientController;
 import gdimitriu.kafka_cxf.properties.RESTProperties;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
@@ -57,7 +57,7 @@ public class CXFRESTServer {
         feature.setSwaggerUiConfig(
                 new SwaggerUiConfig()
                         .url("/openapi.json"));
-        restServer.setProvider(new JacksonJaxbJsonProvider());
+        restServer.setProvider(new JacksonJsonProvider());
         restServer.setServiceBean(restController);
         restServer.getFeatures().add(feature);
         restServer.setProvider(new AuthenticationHandler());

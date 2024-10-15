@@ -40,9 +40,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
-import javax.validation.Valid;
+import jakarta.jws.WebMethod;
+import jakarta.jws.WebService;
+import jakarta.validation.Valid;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;

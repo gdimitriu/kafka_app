@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -47,6 +47,7 @@ public class CXFWSServer {
 
     @PostConstruct
     void startServer() {
+        System.out.println("here");
         wsServer = new JaxWsServerFactoryBean();
         wsServer.setServiceBean(wsController);
         String hostname = "localhost";
