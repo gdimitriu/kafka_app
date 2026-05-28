@@ -39,4 +39,11 @@ public class ResponseGetTopic {
     public void setRecords(List<ConsumerRecordWrapper> records) {
         this.records = records;
     }
+
+    public ResponseGetTopic(String errorMessage) {
+        records = new ArrayList<>();
+        ConsumerRecordWrapper error = new ConsumerRecordWrapper();
+        error.setValue(errorMessage);
+        records.add(error);
+    }
 }

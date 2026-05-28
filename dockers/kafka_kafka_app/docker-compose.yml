@@ -3,40 +3,33 @@ networks:
   app-tier:
     driver: bridge
 services:
-    zookeeper:
-        image: 'bitnami/zookeeper:latest'
+    image: 'apache/kafka:4.3.0'
         networks:
-            - app-tier
-        ports:
-            - '2181:2181'
-        environment:
-            - ALLOW_ANONYMOUS_LOGIN=yes
-            - ZOO_SERVER_ID=1
-    kafka:
-        image: 'bitnami/kafka:latest'
-        networks:
-            - app-tier
+            app-tier:
+              aliases:
+                - kafka
         ports:
             - '9092:9092'
-            - '9093:9093'
         environment:
-            - KAFKA_BROKER_ID=1
-            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-            - ALLOW_PLAINTEXT_LISTENER=yes
-            - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-            - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-            - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
-            - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
-        depends_on:
-            - zookeeper
+          KAFKA_NODE_ID: 1
+          KAFKA_PROCESS_ROLES: 'broker,controller'
+          KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
+          KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
+          KAFKA_LISTENERS: 'EXTERNAL://:9092,INTERNAL://:9094,CONTROLLER://:9093'
+          KAFKA_ADVERTISED_LISTENERS: 'EXTERNAL://localhost:9092,INTERNAL://kafka:9094'
+          KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+          KAFKA_LOG_DIRS: '/var/lib/kafka/data'
     service:
         image: 'gdimitriu/kafka_app:1.0-SNAPSHOT'
         networks:
             - app-tier
         ports:
             - '9080:9080'
+        restart: on-failure 
         environment:
-            - exposeRestPort=9080
-            - kafkaPort=kafka:9092
+          - exposeRestPort=9080
+          - kafkaPort=kafka:9094
+          - KAFKA_BOOTSTRAP_SERVERS=kafka:9094
         depends_on:
-            - kafka
+          - kafka

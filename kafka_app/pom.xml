@@ -12,8 +12,9 @@
         <maven.compiler.target>21</maven.compiler.target>
         <springboot.version>3.3.4</springboot.version>
         <springdoc.version>1.8.0</springdoc.version>
-        <jackson.version>2.18.6</jackson.version>
-        <log4j.version>2.25.3</log4j.version>
+        <fasterxml.jackson.version>2.21</fasterxml.jackson.version>
+        <jackson.version>3.1.3</jackson.version>
+        <log4j.version>2.26.0</log4j.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -38,7 +39,7 @@
                             <name>gdimitriu/kafka_app:${project.version}</name>
                             <alias>kafka_app</alias>
                             <build>
-                                <from>openjdk:21-jdk</from>
+                                <from>amazoncorretto:26-alpine</from>
                                 <ports>8080</ports>
                                 <env>
                                     <exposeRestPort>8080</exposeRestPort>
@@ -83,54 +84,38 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>3.9.1</version>
+            <version>3.9.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>${springboot.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${springboot.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-json -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-json</artifactId>
-            <version>${springboot.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-tomcat -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-            <version>${springboot.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>${springboot.version}</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
+            <version>${fasterxml.jackson.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <!-- https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+        <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
@@ -146,9 +131,9 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider -->
+        <!-- https://mvnrepository.com/artifact/tools.jackson.jakarta.rs/jackson-jakarta-rs-json-provider -->
         <dependency>
-            <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+            <groupId>tools.jackson.jakarta.rs</groupId>
             <artifactId>jackson-jakarta-rs-json-provider</artifactId>
             <version>${jackson.version}</version>
         </dependency>
@@ -163,12 +148,6 @@
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
             <version>3.1.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/jakarta.ws.rs/jakarta.ws.rs-api -->
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>4.0.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
         <dependency>

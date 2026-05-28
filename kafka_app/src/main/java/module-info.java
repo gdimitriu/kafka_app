@@ -30,7 +30,7 @@ module gdimitriu.kafka_app {
     requires org.slf4j;
     requires jakarta.annotation;
     requires com.fasterxml.jackson.annotation;
-    requires com.fasterxml.jackson.jakarta.rs.json;
+    requires tools.jackson.jakarta.rs.json;
     requires com.fasterxml.jackson.databind;
     requires kafka.clients;
     requires spring.security.core;

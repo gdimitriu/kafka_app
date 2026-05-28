@@ -20,15 +20,16 @@
 package gdimitriu.kafka_cxf.dao;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JacksonXmlRootElement(localName = "response")
+@JsonRootName("response")
 public class ResponseGetTopic {
     @JacksonXmlElementWrapper(localName = "record")
     @JacksonXmlProperty(localName = "record")
@@ -40,6 +41,13 @@ public class ResponseGetTopic {
     public ResponseGetTopic(ConsumerRecords<String,String> recordsKafka) {
         records = new ArrayList<>();
         recordsKafka.forEach(a -> records.add(new gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper(a)));
+    }
+
+    public ResponseGetTopic(String errorMessage) {
+        records = new ArrayList<>();
+        ConsumerRecordWrapper error = new ConsumerRecordWrapper();
+        error.setValue(errorMessage);
+        records.add(error);
     }
 
     public List<gdimitriu.kafka_cxf.dao.ConsumerRecordWrapper> getRecords() {

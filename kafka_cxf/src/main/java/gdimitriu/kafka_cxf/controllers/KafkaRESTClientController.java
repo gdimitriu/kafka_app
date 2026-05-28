@@ -28,12 +28,14 @@ import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +45,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Path("/kafka/client")
@@ -55,6 +54,8 @@ public class KafkaRESTClientController {
     private static final Logger log = LoggerFactory.getLogger(KafkaRESTClientController.class);
     @Autowired
     private KafkaProperties properties;
+    @Autowired
+    private ConsumerRegistry consumerRegistry;
 
     @GET
     @Path("/info")
@@ -62,52 +63,125 @@ public class KafkaRESTClientController {
         return properties.getServersList();
     }
 
+    @POST
+    @Path("/consumers/subscribe/{topic}/{groupId}/{clientId}")
+    @Produces(MediaType.WILDCARD)
+    public Response subscribeConsumer(@Valid @PathParam("topic") String topicName,
+                                      @Valid @PathParam("groupId") String groupId,
+                                      @Valid @PathParam("clientId") String clientId) {
+        Properties kafkaProps = new Properties();
+        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
+        kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        kafkaProps.put("key.deserializer", properties.getKeyDeSerializer());
+        kafkaProps.put("value.deserializer", properties.getValueDeSerializer());
+        kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
+        kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
+        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
+        kafkaProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
+        TopicPartition partition = new TopicPartition(topicName, 0);
+        consumer.assign(Arrays.asList(partition));
+        if (!consumerRegistry.register(topicName, groupId, clientId, consumer)) {
+            consumer.close();
+            return Response.status(Response.Status.CONFLICT)
+                           .entity("Consumer already subscribed\n").build();
+        }
+        consumer.poll(Duration.ofMillis(0));
+        return Response.ok("subscribed\n").build();
+    }
+
+    @DELETE
+    @Path("/consumers/subscribe/{topic}/{groupId}/{clientId}")
+    @Produces(MediaType.WILDCARD)
+    public Response unsubscribeConsumer(@Valid @PathParam("topic") String topicName,
+                                        @Valid @PathParam("groupId") String groupId,
+                                        @Valid @PathParam("clientId") String clientId) {
+        ConsumerRegistry.ConsumerEntry entry = consumerRegistry.get(topicName, groupId, clientId);
+        if (entry == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Consumer not found\n").build();
+        }
+        entry.lock.lock();
+        try {
+            consumerRegistry.remove(topicName, groupId, clientId);
+            entry.consumer.unsubscribe();
+            entry.consumer.close();
+        } finally {
+            entry.lock.unlock();
+        }
+        return Response.ok("unsubscribed\n").build();
+    }
+
     @GET
     @Path("/topics/{topic}/records/{groupId}/{clientId}/{offsetId}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getTopicRecords(@Valid @PathParam("topic") String topicName,
-                                                            @Valid @PathParam("groupId") String groupId,
-                                                            @Valid @PathParam("clientId") String clientId,
-                                                            @Valid @PathParam("offsetId") long offsetId) {
-        Properties kafkaProps = new Properties();
-        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
-        kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG,groupId);
-        kafkaProps.put("key.deserializer", properties.getKeyDeSerializer());
-        kafkaProps.put("value.deserializer", properties.getValueDeSerializer());
-        kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getEnableAutoCommit());
-        kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
-        kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
-        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
-        consumer.subscribe(Arrays.asList(topicName), new HandleRebalance(consumer, offsetId));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-        Response response = Response.ok(new ResponseGetTopic(records)).build();
-        consumer.unsubscribe();
-        return response;
+                                    @Valid @PathParam("groupId") String groupId,
+                                    @Valid @PathParam("clientId") String clientId,
+                                    @Valid @PathParam("offsetId") long offsetId) {
+        ConsumerRegistry.ConsumerEntry entry = consumerRegistry.get(topicName, groupId, clientId);
+        if (entry == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Consumer not subscribed\n").build();
+        }
+        entry.lock.lock();
+        try {
+            KafkaConsumer<String, String> consumer = entry.consumer;
+            consumer.poll(Duration.ofMillis(0));
+            Collection<TopicPartition> assigned = consumer.assignment();
+            if (!assigned.isEmpty()) {
+                Map<TopicPartition, Long> endOffsets = consumer.endOffsets(assigned);
+                for (Map.Entry<TopicPartition, Long> e : endOffsets.entrySet()) {
+                    if (e.getValue() > offsetId) {
+                        consumer.seek(e.getKey(), offsetId);
+                    }
+                }
+            }
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(200));
+            return Response.ok(new ResponseGetTopic(records)).build();
+        } finally {
+            entry.lock.unlock();
+        }
     }
 
     @GET
     @Path("/topics/{topic}/allrecords/{groupId}/{clientId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTopicAllRecords(@Valid @PathParam("topic") String topicName,
-                                                               @Valid @PathParam("groupId") String groupId,
-                                                               @Valid @PathParam("clientId") String clientId) {
-        Properties kafkaProps = new Properties();
-        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
-        kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG,groupId);
-        kafkaProps.put("key.deserializer", properties.getKeyDeSerializer());
-        kafkaProps.put("value.deserializer", properties.getValueDeSerializer());
-        kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getEnableAutoCommit());
-        kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
-        kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
-        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, clientId);
-        kafkaProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
-        consumer.subscribe(Arrays.asList(topicName));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-        Response response = Response.ok(new ResponseGetTopic(records)).build();
-        consumer.unsubscribe();
-        return response;
+                                       @Valid @PathParam("groupId") String groupId,
+                                       @Valid @PathParam("clientId") String clientId) {
+        ConsumerRegistry.ConsumerEntry entry = consumerRegistry.get(topicName, groupId, clientId);
+        if (entry == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Consumer not subscribed\n").build();
+        }
+        Set<TopicPartition> assignment = entry.consumer.assignment();
+        if (!assignment.isEmpty()) {
+            entry.consumer.seekToBeginning(assignment);
+        } else {
+            entry.consumer.poll(Duration.ofMillis(0));
+            assignment = entry.consumer.assignment();
+            if (!assignment.isEmpty()) {
+                entry.consumer.seekToBeginning(assignment);
+            }
+        }
+        long startTime = System.currentTimeMillis();
+        long timeoutMs = 3000;
+        ConsumerRecords<String, String> records = null;
+        entry.lock.lock();
+        try {
+            while (System.currentTimeMillis() - startTime < timeoutMs) {
+                records = entry.consumer.poll(Duration.ofMillis(200));
+                if (!records.isEmpty()) {
+                    System.out.println("I have " + records);
+                    break;
+                }
+            }
+            return Response.ok(new ResponseGetTopic(records)).build();
+        } finally {
+            entry.lock.unlock();
+        }
     }
 
     @POST
@@ -208,6 +282,7 @@ public class KafkaRESTClientController {
             return Response.serverError().build();
         }
     }
+
     @POST
     @Path("/topics/{topic}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -221,6 +296,7 @@ public class KafkaRESTClientController {
         ProducerRecord<String, String> record = new ProducerRecord<>(topicName, dataTopic.getKey(), dataTopic.getValue());
         try {
             RecordMetadata result = kafkaProducer.send(record).get();
+            kafkaProducer.flush();
             log.info("SendSynchronous topic : " + result.topic() + " : " + result.timestamp());
         } catch (Throwable e) {
             e.printStackTrace();

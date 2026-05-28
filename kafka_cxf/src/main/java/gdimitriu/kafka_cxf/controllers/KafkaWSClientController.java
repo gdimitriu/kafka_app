@@ -35,6 +35,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +45,7 @@ import jakarta.jws.WebMethod;
 import jakarta.jws.WebService;
 import jakarta.validation.Valid;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -56,13 +54,119 @@ public class KafkaWSClientController {
     private static final Logger log = LoggerFactory.getLogger(KafkaWSClientController.class);
     @Autowired
     private KafkaProperties properties;
+    @Autowired
+    private ConsumerRegistry consumerRegistry;
 
     @WebMethod(operationName = "info")
     public String getInfo() {
         return properties.getServersList();
     }
 
-    @WebMethod(operationName ="createtopic")
+    @WebMethod(operationName = "subscribe")
+    public String subscribeConsumer(@Valid RequestGetTopicRecords dataRecords) {
+        Properties kafkaProps = new Properties();
+        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
+        kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG, dataRecords.getGroupId());
+        kafkaProps.put("key.deserializer", properties.getKeyDeSerializer());
+        kafkaProps.put("value.deserializer", properties.getValueDeSerializer());
+        kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getEnableAutoCommit());
+        kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
+        kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
+        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, dataRecords.getClientId());
+        kafkaProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
+        TopicPartition partition = new TopicPartition(dataRecords.getTopicName(), 0);
+        consumer.assign(Arrays.asList(partition));
+        if (!consumerRegistry.register(dataRecords.getTopicName(), dataRecords.getGroupId(),
+                                        dataRecords.getClientId(), consumer)) {
+            consumer.close();
+            return "Consumer already subscribed";
+        }
+        return "subscribed";
+    }
+
+    @WebMethod(operationName = "unsubscribe")
+    public String unsubscribeConsumer(@Valid RequestGetTopicRecords dataRecords) {
+        ConsumerRegistry.ConsumerEntry entry = consumerRegistry.get(
+                dataRecords.getTopicName(), dataRecords.getGroupId(), dataRecords.getClientId());
+        if (entry == null) {
+            return "Consumer not found";
+        }
+        entry.lock.lock();
+        try {
+            consumerRegistry.remove(dataRecords.getTopicName(), dataRecords.getGroupId(),
+                                    dataRecords.getClientId());
+            entry.consumer.unsubscribe();
+            entry.consumer.close();
+        } finally {
+            entry.lock.unlock();
+        }
+        return "unsubscribed";
+    }
+
+    @WebMethod(operationName = "records")
+    public ResponseGetTopic getTopicRecords(RequestGetTopicRecords dataRecords) {
+        ConsumerRegistry.ConsumerEntry entry = consumerRegistry.get(
+                dataRecords.getTopicName(), dataRecords.getGroupId(), dataRecords.getClientId());
+        if (entry == null) {
+            return new ResponseGetTopic("Consumer not subscribed");
+        }
+        entry.lock.lock();
+        try {
+            KafkaConsumer<String, String> consumer = entry.consumer;
+            consumer.poll(Duration.ofMillis(0));
+            Collection<TopicPartition> assigned = consumer.assignment();
+            if (!assigned.isEmpty()) {
+                Map<TopicPartition, Long> endOffsets = consumer.endOffsets(assigned);
+                for (Map.Entry<TopicPartition, Long> e : endOffsets.entrySet()) {
+                    if (e.getValue() > dataRecords.getOffsetId()) {
+                        consumer.seek(e.getKey(), dataRecords.getOffsetId());
+                    }
+                }
+            }
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+            return new ResponseGetTopic(records);
+        } finally {
+            entry.lock.unlock();
+        }
+    }
+
+    @WebMethod(operationName = "allrecords")
+    public ResponseGetTopic getTopicAllRecords(RequestGetTopicRecords dataRecords) {
+        ConsumerRegistry.ConsumerEntry entry = consumerRegistry.get(
+                dataRecords.getTopicName(), dataRecords.getGroupId(), dataRecords.getClientId());
+        if (entry == null) {
+            return new ResponseGetTopic("Consumer not subscribed");
+        }
+        Set<TopicPartition> assignment = entry.consumer.assignment();
+        if (!assignment.isEmpty()) {
+            entry.consumer.seekToBeginning(assignment);
+        } else {
+            entry.consumer.poll(Duration.ofMillis(0));
+            assignment = entry.consumer.assignment();
+            if (!assignment.isEmpty()) {
+                entry.consumer.seekToBeginning(assignment);
+            }
+        }
+        long startTime = System.currentTimeMillis();
+        long timeoutMs = 3000;
+        ConsumerRecords<String, String> records = null;
+        entry.lock.lock();
+        try {
+            while (System.currentTimeMillis() - startTime < timeoutMs) {
+                records = entry.consumer.poll(Duration.ofMillis(200));
+                if (!records.isEmpty()) {
+                    System.out.println("I have " + records);
+                    break;
+                }
+            }
+            return new ResponseGetTopic(records);
+        } finally {
+            entry.lock.unlock();
+        }
+    }
+
+    @WebMethod(operationName = "createtopic")
     public String createOneTopic(@Valid RequestCreateTopic dataTopic) {
         Properties kafkaProps = new Properties();
         kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
@@ -84,7 +188,7 @@ public class KafkaWSClientController {
         return "topic created";
     }
 
-    @WebMethod(operationName ="deletetopic")
+    @WebMethod(operationName = "deletetopic")
     public String deleteTopic(String topicName) {
         Properties kafkaProps = new Properties();
         kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
@@ -103,7 +207,7 @@ public class KafkaWSClientController {
         return "topic deleted\n";
     }
 
-    @WebMethod(operationName ="posttopic")
+    @WebMethod(operationName = "posttopic")
     public String postTopic(String topicName, @Valid RequestPostTopic dataTopic) {
         log.info("topic:" + topicName + " data = " + dataTopic.getKey() + ":" + dataTopic.getValue());
         Properties kafkaProps = new Properties();
@@ -122,26 +226,7 @@ public class KafkaWSClientController {
         return "success\n";
     }
 
-    @WebMethod(operationName ="records")
-    public ResponseGetTopic getTopicRecords(RequestGetTopicRecords dataRecords) {
-        Properties kafkaProps = new Properties();
-        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
-        kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG,dataRecords.getGroupId());
-        kafkaProps.put("key.deserializer", properties.getKeyDeSerializer());
-        kafkaProps.put("value.deserializer", properties.getValueDeSerializer());
-        kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getEnableAutoCommit());
-        kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
-        kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
-        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, dataRecords.getClientId());
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
-        consumer.subscribe(Arrays.asList(dataRecords.getTopicName()), new HandleRebalance(consumer, dataRecords.getOffsetId()));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-        ResponseGetTopic result = new ResponseGetTopic(records);
-        consumer.unsubscribe();
-        return result;
-    }
-
-    @WebMethod(operationName ="infotopic")
+    @WebMethod(operationName = "infotopic")
     public RequestCreateTopic infoOneTopic(@Valid String topicName) {
         Properties kafkaProps = new Properties();
         kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
@@ -167,24 +252,5 @@ public class KafkaWSClientController {
             result.setTopicName(e.getLocalizedMessage());
             return result;
         }
-    }
-
-    @WebMethod(operationName ="allrecords")
-    public ResponseGetTopic getTopicAllRecords(RequestGetTopicRecords dataRecords) {
-        Properties kafkaProps = new Properties();
-        kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getServersList());
-        kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG,dataRecords.getGroupId());
-        kafkaProps.put("key.deserializer", properties.getKeyDeSerializer());
-        kafkaProps.put("value.deserializer", properties.getValueDeSerializer());
-        kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, properties.getEnableAutoCommit());
-        kafkaProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, properties.getAutoCommitInterval());
-        kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, properties.getSessionTimeoutInterval());
-        kafkaProps.put(ConsumerConfig.CLIENT_ID_CONFIG, dataRecords.getClientId());
-        kafkaProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaProps);
-        consumer.subscribe(Arrays.asList(dataRecords.getTopicName()));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-        ResponseGetTopic response = new ResponseGetTopic(records);
-        return response;
     }
 }

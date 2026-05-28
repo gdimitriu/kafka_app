@@ -64,7 +64,7 @@ public class CXFRESTServer {
         String hostname = "localhost";
         try {
             hostname = InetAddress.getLocalHost().getCanonicalHostName();
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException ignored) {
         }
         restServer.setAddress("http://" + hostname + ":" + restProperties.getPort());
         restServer.create();
