@@ -1,0 +1,15 @@
+I want a standalone application, without any framework if possible, if is not then use quarkus. This application should be able to be compiled natively with graalVM.
+This should use log4j2 for logging and a corresponding log4j.xml should be created and read from the same location as the jar or executable.
+When it consume from a topic the last offset should be print on standard output
+This should connect to the kafka server and do the following:
+1) list all topics
+2) create/delete topics
+3) produce entries into a topic
+4) consume (without commit) values from a topic from a specific offset
+The command line must support the following:
+1) kafka url and port in the format url:port
+2) -O is the operation which should be one of the following operations: consume, produce, list, create and delete
+3) -f is the output file for the consume operation or the input file for the produce operation
+4) -t is the topic on which it produce or consume
+5) -o is the offset from where to consume
+6) -h to present the help

@@ -1,0 +1,9 @@
+[
+  {
+    "comment": "Required by Kafka NIO networking: ByteBuffer.allocateDirect() and direct buffer operations",
+    "name": "java.nio.DirectByteBuffer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  }
+]

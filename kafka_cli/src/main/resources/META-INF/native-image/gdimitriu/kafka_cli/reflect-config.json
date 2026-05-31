@@ -1,0 +1,83 @@
+[
+  {
+    "comment": "Kafka serializers: loaded by class name from producer/consumer config properties",
+    "name": "org.apache.kafka.common.serialization.StringSerializer",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+  {
+    "name": "org.apache.kafka.common.serialization.StringDeserializer",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+  {
+    "name": "org.apache.kafka.common.serialization.ByteArraySerializer",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+  {
+    "name": "org.apache.kafka.common.serialization.ByteArrayDeserializer",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+
+  {
+    "comment": "KafkaAdminClient: AdminClient.create() resolves this class name internally via Class.forName",
+    "name": "org.apache.kafka.clients.admin.KafkaAdminClient",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+
+  {
+    "comment": "Default partitioner: loaded reflectively by producer when no custom partitioner is set",
+    "name": "org.apache.kafka.clients.producer.internals.DefaultPartitioner",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+
+  {
+    "comment": "JMX metric reporter: referenced by name in default metrics config even when JMX is disabled",
+    "name": "org.apache.kafka.common.metrics.JmxReporter",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+
+  {
+    "comment": "Config providers: discovered via ServiceLoader and Class.forName in Kafka config layer",
+    "name": "org.apache.kafka.common.config.provider.FileConfigProvider",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+  {
+    "name": "org.apache.kafka.common.config.provider.DirectoryConfigProvider",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+  {
+    "name": "org.apache.kafka.common.config.provider.EnvVarConfigProvider",
+    "methods": [{"name": "<init>", "parameterTypes": []}]
+  },
+
+  {
+    "comment": "SASL/security classes: speculatively class-loaded by Kafka networking layer even when SASL is unused",
+    "name": "org.apache.kafka.common.security.authenticator.SaslClientAuthenticator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.apache.kafka.common.security.plain.PlainLoginModule",
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.apache.kafka.common.security.scram.ScramLoginModule",
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule",
+    "allDeclaredConstructors": true
+  },
+
+  {
+    "comment": "SSL context: used by Kafka network layer for TLS handshake bootstrap",
+    "name": "sun.security.ssl.SSLContextImpl$TLSContext",
+    "allDeclaredConstructors": true
+  },
+
+  {
+    "comment": "Kafka network: RecordAccumulator and related internals use reflection for batch sizing",
+    "name": "org.apache.kafka.clients.producer.internals.RecordAccumulator",
+    "allDeclaredFields": true
+  }
+]
