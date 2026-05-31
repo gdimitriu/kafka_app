@@ -1,0 +1,23 @@
+Kafka connect to create connectors for data pipeline.
+
+Kafka MirorMaking :
+Apache Kafka contains a simple tool for mirroring data between two datacenters.
+It is called MirrorMaker and at its core, it is a collection of consumers
+(called streams in MirrorMaker documentation, for historical reasons),
+which are all part of the same consumer group and read data from the set
+of topics you chose to replicate. Each MirrorMaker process has a single producer.
+
+bin/kafka-mirror-maker --consumer.config etc/kafka/consumer.properties --producer.config etc/kafka/producer.properties --new.consumer --num.streams=2 --whitelist ".*"
+
+Consumers with SSL use a lot of resources so is better to have producer with SSL in case of mirroring.
+
+If you are running MirrorMaker across datacenters, you want to optimize the network configuration in Linux as follows:
+Increase TCP buffer size (net.core.rmem_default, net.core.rmem_max, net.core.wmem_default, net.core.wmem_max, net.core.optmem_max)
+Enable automatic window scaling (sysctl –w net.ipv4.tcp_window_scaling=1 or add net.ipv4.tcp_window_scaling=1 to /etc/sysctl.conf)
+Reduce the TCP slow start time (set /proc/sys/net/ipv4/tcp_slow_start_after_idle to 0)
+
+kafka-configs.sh --zookeeper zoo1.example.com:2181/kafka-cluster--alter --entity-type topics --entity-name <topic name>--add-config <key>=<value>[,<key>=<value>...]
+
+One way to cause brokers to resume leadership is to trigger a preferred replica election.
+The kafka-reassign-partitions.sh can be used to perform to change the replica assignments for a partition.
+

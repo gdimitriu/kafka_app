@@ -1,0 +1,25 @@
+# Quarkus runtime config — mounted at /opt/app/kafka_quarkus.yaml inside the container
+# Environment variables set by docker-compose: exposeRestPort, kafkaPort
+quarkus:
+  http:
+    port: ${exposeRestPort}
+
+kafka:
+  bootstrap:
+    servers: ${kafkaPort}
+  key:
+    serializer: org.apache.kafka.common.serialization.StringSerializer
+    deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  value:
+    serializer: org.apache.kafka.common.serialization.StringSerializer
+    deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  enable:
+    auto:
+      commit: true
+  auto:
+    commit:
+      interval:
+        ms: 1000
+  session:
+    timeout:
+      ms: 30000
