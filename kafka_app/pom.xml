@@ -13,7 +13,7 @@
         <springboot.version>3.3.4</springboot.version>
         <springdoc.version>1.8.0</springdoc.version>
         <fasterxml.jackson.version>2.21</fasterxml.jackson.version>
-        <jackson.version>3.1.4</jackson.version>
+        <jackson.version>3.1.5</jackson.version>
         <log4j.version>2.26.0</log4j.version>
     </properties>
     <parent>
